@@ -1,0 +1,32 @@
+---
+description: Ukrainian chat replies; English for all project artifacts
+alwaysApply: true
+---
+
+# Language conventions (Cosmo Pug)
+
+## Chat with the user
+
+- Write **all assistant replies in Ukrainian** ( explanations, summaries, questions, status updates).
+
+## Everything in the repository
+
+Use **English** unless the user explicitly asks for another language in a specific file:
+
+- Source code, identifiers, and comments
+- README and other docs
+- In-game UI strings (HUD, menus, game over, tutorials)
+- Commit messages and PR text (when the user asks you to write them)
+- Xcode project display names and `Info.plist` user-facing strings
+
+## Examples
+
+```swift
+// ✅ GOOD — UI copy in English
+scoreLabel.text = "Score: \(score)"
+
+// ❌ BAD — Ukrainian in the game UI
+scoreLabel.text = "Очки: \(score)"
+```
+
+When adding localized strings later, default to English as the base (`en`) and add `uk` (or others) via `Localizable.strings` only if requested.
