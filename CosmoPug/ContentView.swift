@@ -2,14 +2,13 @@ import SpriteKit
 import SwiftUI
 
 struct ContentView: View {
-    private let scene: GameScene = {
-        let scene = GameScene()
-        scene.scaleMode = .resizeFill
-        return scene
+    @State private var scene: GameScene = {
+        let bounds = UIScreen.main.bounds
+        return GameScene(size: bounds.size)
     }()
 
     var body: some View {
-        SpriteView(scene: scene, options: [.allowsTransparency])
+        SpriteView(scene: scene)
             .ignoresSafeArea()
     }
 }

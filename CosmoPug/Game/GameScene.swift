@@ -6,6 +6,21 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
     private var spawnAccumulator: TimeInterval = 0
     private var score = 0
     private var isGameOver = false
+    private var didSetUpWorld = false
+
+    override init(size: CGSize) {
+        super.init(size: size)
+        scaleMode = .resizeFill
+        anchorPoint = CGPoint(x: 0.5, y: 0.5)
+        backgroundColor = SKColor(red: 0.04, green: 0.05, blue: 0.12, alpha: 1)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        scaleMode = .resizeFill
+        anchorPoint = CGPoint(x: 0.5, y: 0.5)
+        backgroundColor = SKColor(red: 0.04, green: 0.05, blue: 0.12, alpha: 1)
+    }
 
     private let scoreLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
     private let livesLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
@@ -19,19 +34,24 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
     }
 
     override func didMove(to view: SKView) {
-        backgroundColor = SKColor(red: 0.04, green: 0.05, blue: 0.12, alpha: 1)
         physicsWorld.gravity = .zero
         physicsWorld.contactDelegate = self
-
-        addChild(StarfieldNode(size: size))
-        setupHUD()
-        setupPlayer()
+        setupWorldIfNeeded()
     }
 
     override func didChangeSize(_ oldSize: CGSize) {
         super.didChangeSize(oldSize)
+        setupWorldIfNeeded()
         layoutHUD()
         player?.clampToScene()
+    }
+
+    private func setupWorldIfNeeded() {
+        guard size.width > 1, size.height > 1, !didSetUpWorld else { return }
+        didSetUpWorld = true
+        addChild(StarfieldNode(size: size))
+        setupPlayer()
+        setupHUD()
     }
 
     private func setupHUD() {
@@ -138,7 +158,7 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
 
     private func updateHUD() {
         scoreLabel.text = "Score: \(score)"
-        livesLabel.text = "Lives: \(player.lives)"
+        livesLabel.text = "Lives: \(player?.lives ?? 3)"
     }
 
     private func handlePlayerHit() {
@@ -162,13 +182,12 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
     private func restart() {
         removeAllChildren()
         isGameOver = false
+        didSetUpWorld = false
         score = 0
         spawnAccumulator = 0
         lastUpdateTime = 0
         gameOverLabel.alpha = 0
-        addChild(StarfieldNode(size: size))
-        setupHUD()
-        setupPlayer()
+        setupWorldIfNeeded()
     }
 
     func didBegin(_ contact: SKPhysicsContact) {
